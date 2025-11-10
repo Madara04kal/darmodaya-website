@@ -1,5 +1,5 @@
 // ===========================
-// Hamburger toggle
+// Hamburger toggle + auto close
 // ===========================
 const hamburger = document.querySelector(".hamburger");
 const navLinks = document.querySelector(".nav-links");
@@ -7,6 +7,14 @@ const navLinks = document.querySelector(".nav-links");
 hamburger.addEventListener("click", () => {
   navLinks.classList.toggle("active");
   hamburger.classList.toggle("toggle");
+});
+
+// Close menu when a link is clicked
+navLinks.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    navLinks.classList.remove('active');
+    hamburger.classList.remove('toggle');
+  });
 });
 
 // ===========================
@@ -65,7 +73,7 @@ window.addEventListener('scroll', () => {
   let current = '';
 
   sections.forEach(section => {
-    const sectionTop = section.offsetTop - 100; // offset for navbar height
+    const sectionTop = section.offsetTop - 100;
     if (pageYOffset >= sectionTop) current = section.getAttribute('id');
   });
 
