@@ -1,31 +1,62 @@
 // ===========================
-// Particle generation (starry)
+// Hamburger toggle
+// ===========================
+const hamburger = document.querySelector(".hamburger");
+const navLinks = document.querySelector(".nav-links");
+
+hamburger.addEventListener("click", () => {
+  navLinks.classList.toggle("active");
+  hamburger.classList.toggle("toggle");
+});
+
+// ===========================
+// Particle generation (starry) inside hero
+// ===========================
 const particleContainer = document.querySelector('.particles');
+
 if (particleContainer) {
-  const numParticles = 40;
+  const isMobile = window.innerWidth <= 768;
+  const numParticles = isMobile ? 20 : 40;
+  const headerHeight = particleContainer.parentElement.offsetHeight;
+
   for (let i = 0; i < numParticles; i++) {
     const particle = document.createElement('span');
+
+    // random horizontal and vertical position
     particle.style.left = Math.random() * 100 + 'vw';
-    const size = 4 + Math.random() * 6;
+    particle.style.top = Math.random() * headerHeight + 'px';
+
+    // random size
+    const size = isMobile ? 2 + Math.random() * 4 : 4 + Math.random() * 6;
     particle.style.width = size + 'px';
     particle.style.height = size + 'px';
-    particle.style.animationDuration =
-      (5 + Math.random() * 5) + 's, ' + (1 + Math.random() * 2) + 's';
-    particle.style.animationDelay =
-      Math.random() * 5 + 's, ' + Math.random() * 2 + 's';
+
+    // animation duration and delay
+    const floatDuration = 2 + Math.random() * 1;
+    const twinkleDuration = 1 + Math.random() * 2;
+    const floatDelay = Math.random() * 5;
+    const twinkleDelay = Math.random() * 2;
+
+    particle.style.animation = `
+      floatHeader ${floatDuration}s linear ${floatDelay}s infinite,
+      twinkle ${twinkleDuration}s alternate ${twinkleDelay}s infinite
+    `;
+
     particleContainer.appendChild(particle);
   }
 }
 
 // ===========================
-// Navbar scroll effect & active link
+// Navbar scroll effect + active link highlighting
+// ===========================
 window.addEventListener('scroll', () => {
   const navbar = document.querySelector('.navbar');
+
   if (window.scrollY > 50) {
-    navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+    navbar.style.background = 'rgba(255,255,255,0.95)';
     navbar.style.boxShadow = '0 3px 15px rgba(0,0,0,0.15)';
   } else {
-    navbar.style.background = 'rgba(255, 255, 255, 0.9)';
+    navbar.style.background = 'rgba(255,255,255,0.9)';
     navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
   }
 
@@ -33,24 +64,13 @@ window.addEventListener('scroll', () => {
   const navLinks = document.querySelectorAll('.nav-links a');
   let current = '';
 
-  sections.forEach((section) => {
-    const sectionTop = section.offsetTop - 100;
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop - 100; // offset for navbar height
     if (pageYOffset >= sectionTop) current = section.getAttribute('id');
   });
 
-  navLinks.forEach((link) => {
+  navLinks.forEach(link => {
     link.classList.remove('active');
-    if (link.getAttribute('href').includes(current)) {
-      link.classList.add('active');
-    }
+    if (link.getAttribute('href').includes(current)) link.classList.add('active');
   });
-});
-
-// ===========================
-// Hamburger menu toggle
-const hamburger = document.querySelector('.hamburger');
-const navLinks = document.querySelector('.nav-links');
-
-hamburger.addEventListener('click', () => {
-  navLinks.classList.toggle('active');
 });
