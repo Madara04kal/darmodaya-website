@@ -6,27 +6,27 @@
   <title>Darmodaya</title>
 
   <link rel="icon" type="image/png" href="images/Buddhismfavicon.png" />
-
+  
   <!-- Google Fonts -->
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500&display=swap"
-    rel="stylesheet"
-  />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@400;500&display=swap" rel="stylesheet" />
 
-  <!-- External CSS -->
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Navigation Bar -->
   <nav class="navbar">
     <div class="logo">🪷 Sri Darmodaya Daham pasala</div>
+
+    <!-- Hamburger -->
     <div class="hamburger">
       <span></span>
       <span></span>
       <span></span>
     </div>
+    <button class="nav-close">&times;</button>
     <ul class="nav-links">
-      <li><a href="#home">🏠 Home</a></li>
+      <li><a href="#home" class="active">🏠 Home</a></li>
       <li><a href="teachers.html">👨‍🏫 Teachers</a></li>
       <li><a href="#events">📅 Events</a></li>
       <li><a href="#gallery">🖼️ Gallery</a></li>
@@ -37,8 +37,8 @@
 
   <!-- Hero Section -->
   <header id="home">
+    <div class="particles"></div> <!-- particle container -->
     <div class="overlay"></div>
-    <div class="particles"></div>
     <div class="hero-content">
       <h2>Welcome to</h2>
       <h1>Sri Darmodaya Daham pasala</h1>
@@ -46,6 +46,9 @@
       <a href="#about" class="hero-btn">Learn More</a>
     </div>
   </header>
+
+  <!-- Bottom spacer to balance the hero layout -->
+  <div class="hero-spacer"></div>
 
   <!-- About Section -->
   <section id="about">
@@ -74,7 +77,7 @@
     <p>© 2025 Sri Darmodaya Dahampasala | All Rights Reserved</p>
   </footer>
 
-  <!-- External JS -->
+  <!-- JS -->
   <script src="scripts.js"></script>
 </body>
 </html>
