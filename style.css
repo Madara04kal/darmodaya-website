@@ -209,7 +209,7 @@ footer {
 /* ============================
    Responsive
 ============================ */
-@media (max-width: 768px) {
+/*@media (max-width: 768px) {
   .navbar {
     padding: 15px 30px;
     flex-wrap: wrap;
@@ -220,9 +220,9 @@ footer {
     display: none;
     gap: 15px;
     position: absolute;
-    top: 80px;
+    top: 70px;
     left: 0;
-    height: calc(100vh - 80px);
+    height: calc(100vh - 70px);
     background-color: rgba(255,248,240,0.95);
     flex-direction: column;
     justify-content: center;
@@ -251,6 +251,51 @@ footer {
   .hero-btn {
     font-size: 1rem;
     padding: 10px 25px;
+  }
+}*/
+
+
+/* Mobile nav overlay */
+@media (max-width: 768px) {
+  .nav-links {
+    position: absolute;
+    top: 0;  /* cover full screen from top */
+    left: 0;
+    width: 100%;
+    height: 100vh;  /* full screen height */
+    background-color: rgba(255,248,240,0.95);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transform: translateY(-100%);
+    transition: transform 0.4s ease-in-out;
+    z-index: 2100; /* above everything */
+  }
+
+  .nav-links.active {
+    transform: translateY(0);
+  }
+
+  .nav-links li {
+    margin: 20px 0;
+  }
+
+  /* Hamburger & close button */
+  .hamburger {
+    display: flex;
+    z-index: 2200; /* above menu */
+  }
+  .nav-close {
+    display: block;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    z-index: 2200; /* above menu */
   }
 }
 
