@@ -91,3 +91,13 @@ window.addEventListener('scroll', () => {
     if (link.getAttribute('href').includes(current)) link.classList.add('active');
   });
 });
+
+// Click outside nav-links to close menu
+document.addEventListener('click', (e) => {
+  const isClickInsideNav = navLinks.contains(e.target) || hamburger.contains(e.target) || navClose.contains(e.target);
+  
+  if (!isClickInsideNav) {
+    navLinks.classList.remove('active');
+    hamburger.classList.remove('toggle');
+  }
+});
