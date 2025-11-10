@@ -4,27 +4,27 @@
 const hamburger = document.querySelector(".hamburger");
 const navLinks = document.querySelector(".nav-links");
 const navClose = document.querySelector(".nav-close");
+const navItems = document.querySelectorAll(".nav-links li a");
 
-// Toggle menu with hamburger
+// Hamburger toggle
 hamburger.addEventListener("click", () => {
   navLinks.classList.toggle("active");
   hamburger.classList.toggle("toggle");
 });
 
-// Close menu with close button
+// Close button toggle
 navClose.addEventListener("click", () => {
   navLinks.classList.remove("active");
   hamburger.classList.remove("toggle");
 });
 
-// Close menu when a link is clicked
-navLinks.querySelectorAll('a').forEach(link => {
-  link.addEventListener('click', () => {
-    navLinks.classList.remove('active');
-    hamburger.classList.remove('toggle');
+// Close menu when clicking a menu item
+navItems.forEach(link => {
+  link.addEventListener("click", () => {
+    navLinks.classList.remove("active");
+    hamburger.classList.remove("toggle");
   });
 });
-
 
 // ===========================
 // Particle generation (starry) inside hero
