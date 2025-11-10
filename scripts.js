@@ -1,36 +1,24 @@
-// scripts.js
-
-
 // ===========================
 // Particle generation (starry)
 const particleContainer = document.querySelector('.particles');
 if (particleContainer) {
-  const numParticles = 40; // more stars
+  const numParticles = 40;
   for (let i = 0; i < numParticles; i++) {
     const particle = document.createElement('span');
-
-    // random horizontal position
     particle.style.left = Math.random() * 100 + 'vw';
-
-    // random size between 2px and 6px
     const size = 4 + Math.random() * 6;
     particle.style.width = size + 'px';
     particle.style.height = size + 'px';
-
-    // random animation duration
-    particle.style.animationDuration = (5 + Math.random() * 5) + 's, ' + (1 + Math.random() * 2) + 's';
-
-    // random delay so stars are staggered
-    particle.style.animationDelay = Math.random() * 5 + 's, ' + Math.random() * 2 + 's';
-
+    particle.style.animationDuration =
+      (5 + Math.random() * 5) + 's, ' + (1 + Math.random() * 2) + 's';
+    particle.style.animationDelay =
+      Math.random() * 5 + 's, ' + Math.random() * 2 + 's';
     particleContainer.appendChild(particle);
   }
 }
 
-
 // ===========================
-// Navbar scroll effect
-// ===========================
+// Navbar scroll effect & active link
 window.addEventListener('scroll', () => {
   const navbar = document.querySelector('.navbar');
   if (window.scrollY > 50) {
@@ -41,18 +29,13 @@ window.addEventListener('scroll', () => {
     navbar.style.boxShadow = '0 2px 10px rgba(0,0,0,0.1)';
   }
 
-  // ===========================
-  // Highlight active nav link
-  // ===========================
   const sections = document.querySelectorAll('header, section');
   const navLinks = document.querySelectorAll('.nav-links a');
   let current = '';
 
   sections.forEach((section) => {
-    const sectionTop = section.offsetTop - 100; // offset for navbar height
-    if (pageYOffset >= sectionTop) {
-      current = section.getAttribute('id');
-    }
+    const sectionTop = section.offsetTop - 100;
+    if (pageYOffset >= sectionTop) current = section.getAttribute('id');
   });
 
   navLinks.forEach((link) => {
@@ -61,4 +44,13 @@ window.addEventListener('scroll', () => {
       link.classList.add('active');
     }
   });
+});
+
+// ===========================
+// Hamburger menu toggle
+const hamburger = document.querySelector('.hamburger');
+const navLinks = document.querySelector('.nav-links');
+
+hamburger.addEventListener('click', () => {
+  navLinks.classList.toggle('active');
 });
