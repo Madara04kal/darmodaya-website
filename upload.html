@@ -1,63 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Image Upload Panel</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f7f7;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
-    }
-    h2 { text-align: center; }
-    .upload-box {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 20px;
-    }
-    input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover { background: #0056b3; }
-    .preview img {
-      width: 100%;
-      margin-top: 20px;
-      border-radius: 8px;
-    }
-    .url-box {
-      background: #eee;
-      padding: 10px;
-      border-radius: 5px;
-      margin-top: 10px;
-      font-size: 14px;
-      word-wrap: break-word;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Image Upload Panel</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+  }
+
+  h2 { text-align: center; margin-bottom: 20px; }
+
+  /* Login form */
+  #loginForm {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+  }
+
+  .password-container {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  #adminPassword {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  .show-password {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    font-size: 14px;
+  }
+
+  .show-password input[type="checkbox"] {
+    margin-right: 8px;
+    transform: scale(1.2);
+  }
+
+  #loginForm button {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  #loginForm button:hover { background: #0056b3; }
+
+  /* Upload panel */
+  .upload-box {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    display: none; /* hidden until login */
+  }
+
+  input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+
+  button.upload-btn {
+    width: 100%;
+    padding: 12px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  button.upload-btn:hover { background: #218838; }
+
+  .preview img { width: 100%; margin-top: 20px; border-radius: 8px; }
+  .url-box {
+    background: #eee;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 14px;
+    word-wrap: break-word;
+  }
+</style>
 </head>
 <body>
 
 <h2>Admin Image Upload Panel</h2>
 
-<div class="upload-box">
+<!-- Login Form -->
+<div id="loginForm">
+  <div class="password-container">
+    <input type="password" id="adminPassword" placeholder="Enter Admin Password" />
+  </div>
+
+  <div class="show-password">
+    <input type="checkbox" id="showPassword" />
+    <label for="showPassword">Show Password</label>
+  </div>
+
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- Upload Panel (hidden until login) -->
+<div class="upload-box" id="uploadBox">
   <input type="file" id="imageUpload" accept="image/*" />
-  <button id="uploadBtn" onclick="uploadImage()">Upload Image</button>
+  <button class="upload-btn" id="uploadBtn" onclick="uploadImage()">Upload Image</button>
 
   <div id="preview" class="preview"></div>
   <div id="urlBox" class="url-box" style="display:none;"></div>
@@ -65,22 +132,45 @@
 
 <script>
 const CLOUD_NAME = "dvlo3vmrb";
-const UPLOAD_PRESET = "unsigned_upload"; // make sure this exists in Cloudinary
+const UPLOAD_PRESET = "unsigned_upload"; // ensure it exists in Cloudinary
 
+// Admin password(s)
+const ADMIN_PASSWORDS = ["Admin@123"]; // you can add more passwords
+const loginForm = document.getElementById("loginForm");
+const uploadBox = document.getElementById("uploadBox");
+
+// Show/hide password
+const showPasswordCheckbox = document.getElementById("showPassword");
+const passwordInput = document.getElementById("adminPassword");
+
+showPasswordCheckbox.addEventListener("change", () => {
+  passwordInput.type = showPasswordCheckbox.checked ? "text" : "password";
+});
+
+// Login function
+function login() {
+  const entered = passwordInput.value.trim();
+
+  if (ADMIN_PASSWORDS.includes(entered)) {
+    loginForm.style.display = "none";
+    uploadBox.style.display = "block";
+  } else {
+    alert("Incorrect password. Access denied.");
+  }
+}
+
+// Upload image function
 async function uploadImage() {
   const fileInput = document.getElementById("imageUpload");
   const file = fileInput.files[0];
   const uploadBtn = document.getElementById("uploadBtn");
 
-  if (!file) {
-    alert("Please select an image first!");
-    return;
-  }
+  if (!file) { alert("Please select an image first!"); return; }
 
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", UPLOAD_PRESET);
-  formData.append("folder", "Dhamma school"); // Upload images to this folder
+  formData.append("folder", "Dhamma school"); // upload folder
 
   uploadBtn.innerText = "Uploading...";
   uploadBtn.disabled = true;
