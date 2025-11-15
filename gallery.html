@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #fafafa;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 10px;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+<h2>Image Gallery</h2>
+<div class="gallery" id="gallery"></div>
+
+<script>
+const CLOUD_NAME = "dvlo3vmrb";
+const TAG = "gallery"; // Fetch all images with this tag
+
+async function loadImages() {
+  const container = document.getElementById("gallery");
+
+  try {
+    const response = await fetch(`https://res.cloudinary.com/${CLOUD_NAME}/image/list/${TAG}.json`);
+    
+    if (!response.ok) {
+      container.innerHTML = "<p>No images found. Make sure images are uploaded with the 'gallery' tag.</p>";
+      return;
+    }
+
+    const data = await response.json();
+
+    data.resources.forEach(img => {
+      const imgEl = document.createElement("img");
+      imgEl.src = img.secure_url;
+      imgEl.alt = img.public_id;
+      container.appendChild(imgEl);
+    });
+  } catch (err) {
+    container.innerHTML = "<p>Error loading gallery: " + err.message + "</p>";
+  }
+}
+
+loadImages();
+</script>
+
+</body>
+</html>
