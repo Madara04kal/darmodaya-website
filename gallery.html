@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gallery</title>
+<link rel="icon" type="image/png" href="https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763204150/Buddhismfavicon_s4sn8c.png" />
+<title>Darmodaya-Gallery</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500&display=swap" rel="stylesheet" />
 <style>
   /* Body & Background */
   body {
@@ -17,20 +20,27 @@
   h2 {
     text-align: center;
     margin-bottom: 30px;
-    font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
+    font-family: 'Pacifico', cursive; /* new font */
+    font-size: 3rem;                 /* bigger size */
     color: #2c3e50;
-    text-shadow: 1px 1px 6px rgba(0,0,0,0.1);
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
     position: relative;
+    animation: bounceFade 1.5s ease-in-out infinite; /* animation */
   }
   h2::after {
     content: '';
     display: block;
-    width: 60px;
-    height: 4px;
+    width: 80px;
+    height: 5px;
     background: #3498db;
     margin: 10px auto 0 auto;
-    border-radius: 2px;
+    border-radius: 3px;
+  }
+
+  /* Bounce + fade animation */
+  @keyframes bounceFade {
+    0%, 100% { transform: translateY(0); opacity: 0.8; }
+    50% { transform: translateY(-10px); opacity: 1; }
   }
 
   /* Gallery grid */
@@ -43,12 +53,12 @@
   /* Uniform gallery images */
   .gallery img {
     width: 100%;
-    height: 200px;            /* all images same height */
+    height: 200px;
     border-radius: 12px;
     cursor: pointer;
     transition: transform 0.3s, box-shadow 0.3s;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    object-fit: cover;        /* ensures images fill the box */
+    object-fit: cover;
   }
   .gallery img:hover {
     transform: scale(1.05);
@@ -153,7 +163,16 @@ const images = [
   "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763210554/gb26gd8tue7r7c165akp.png",
   "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763208374/lholp4mgdy7dlgujrqus.jpg",
   "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763205138/jddbwplo2ohi1bcshbra.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763204174/image1.1_t4mhtq.png"
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763204174/image1.1_t4mhtq.png",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234502/Dhamma%20school/s0ingtpubuyvgmbmesar.jpg",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234572/Dhamma%20school/qklssaxxqup4gg7qkbrp.jpg",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234604/Dhamma%20school/ewoj9gp8pcpp6nzpktj6.jpg",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234632/Dhamma%20school/iyowpbewgcszuwexmbcv.jpg",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234657/Dhamma%20school/yliqobcwwn2nr66ydqwx.jpg",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234679/Dhamma%20school/wlqeuwynlpdfxm3wmflb.jpg",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234702/Dhamma%20school/b0ufrtegscjxgyg0qbhn.jpg",
+
+
 ];
 
 const container = document.getElementById("gallery");
