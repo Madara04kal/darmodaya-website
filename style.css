@@ -229,3 +229,8 @@ header p {
     z-index: 2200;
   }
 }
+
+.nav-close {
+  display: none;
+}
+
