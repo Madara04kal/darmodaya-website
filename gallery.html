@@ -22,9 +22,15 @@
     width: 100%;
     border-radius: 10px;
     cursor: pointer;
-    transition: transform 0.3s;
+    transition: transform 0.3s ease;
   }
   .gallery img:hover { transform: scale(1.05); }
+
+  /* Click animation for thumbnail */
+  .thumbnail-click {
+    transform: scale(1.1);
+    transition: transform 0.2s ease;
+  }
 
   /* Lightbox */
   .lightbox {
@@ -44,8 +50,14 @@
     max-height: 70%;
     border-radius: 10px;
     margin-bottom: 15px;
-    transition: transform 0.3s;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    opacity: 1;
   }
+
+  /* Animation classes */
+  .slide-left { transform: translateX(-100%) scale(0.8); opacity: 0; }
+  .slide-right { transform: translateX(100%) scale(0.8); opacity: 0; }
+  .zoom-in { transform: scale(1.05); opacity: 1; }
 
   /* Buttons inside lightbox */
   .lightbox button {
@@ -134,12 +146,20 @@ const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
 
 let currentIndex = 0;
+let isAnimating = false;
 
 // create gallery images
 images.forEach((url, index) => {
   const imgEl = document.createElement("img");
   imgEl.src = url;
-  imgEl.addEventListener("click", () => openLightbox(index));
+  imgEl.addEventListener("click", () => {
+    // thumbnail click animation
+    imgEl.classList.add("thumbnail-click");
+    setTimeout(() => {
+      imgEl.classList.remove("thumbnail-click");
+      openLightbox(index);
+    }, 150); // short delay for click effect
+  });
   container.appendChild(imgEl);
 });
 
@@ -149,9 +169,21 @@ function openLightbox(index) {
   updateLightbox();
 }
 
-function updateLightbox() {
-  const url = images[currentIndex];
-  lightboxImg.src = url;
+function updateLightbox(animation) {
+  if(isAnimating) return;
+  if(animation) {
+    isAnimating = true;
+    lightboxImg.classList.add(animation);
+    setTimeout(() => {
+      lightboxImg.src = images[currentIndex];
+      lightboxImg.classList.remove(animation);
+      lightboxImg.classList.add("zoom-in");
+      setTimeout(() => lightboxImg.classList.remove("zoom-in"), 300);
+      isAnimating = false;
+    }, 300);
+  } else {
+    lightboxImg.src = images[currentIndex];
+  }
 }
 
 // download button
@@ -183,19 +215,25 @@ shareBtn.onclick = () => {
   }
 };
 
-// prev/next buttons
-prevBtn.onclick = () => { currentIndex = (currentIndex - 1 + images.length) % images.length; updateLightbox(); };
-nextBtn.onclick = () => { currentIndex = (currentIndex + 1) % images.length; updateLightbox(); };
+// prev/next buttons with animation
+prevBtn.onclick = () => { 
+  currentIndex = (currentIndex - 1 + images.length) % images.length; 
+  updateLightbox("slide-left");
+};
+nextBtn.onclick = () => { 
+  currentIndex = (currentIndex + 1) % images.length; 
+  updateLightbox("slide-right");
+};
 
-// keyboard arrow navigation
+// keyboard arrow navigation with animation
 document.addEventListener("keydown", (e) => {
   if (lightbox.style.display === "flex") {
     if (e.key === "ArrowLeft") {
       currentIndex = (currentIndex - 1 + images.length) % images.length;
-      updateLightbox();
+      updateLightbox("slide-left");
     } else if (e.key === "ArrowRight") {
       currentIndex = (currentIndex + 1) % images.length;
-      updateLightbox();
+      updateLightbox("slide-right");
     } else if (e.key === "Escape") {
       closeLightbox();
     }
