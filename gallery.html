@@ -1,48 +1,211 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gallery</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #fafafa;
-    }
-    h2 { text-align: center; margin-bottom: 20px; }
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 15px;
-    }
-    .gallery img {
-      width: 100%;
-      border-radius: 10px;
-      transition: transform 0.3s;
-      cursor: pointer;
-    }
-    .gallery img:hover { transform: scale(1.05); }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #fafafa;
+  }
+  h2 { text-align: center; margin-bottom: 20px; }
+
+  /* Gallery grid */
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+  }
+  .gallery img {
+    width: 100%;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+  }
+  .gallery img:hover { transform: scale(1.05); }
+
+  /* Lightbox */
+  .lightbox {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9);
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+  }
+  .lightbox img {
+    max-width: 90%;
+    max-height: 70%;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: transform 0.3s;
+  }
+
+  /* Buttons inside lightbox */
+  .lightbox button {
+    margin: 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+
+  .close-btn {
+    background: #ff4c4c;
+    color: white;
+  }
+  .close-btn:hover { background: #e63939; transform: scale(1.1); }
+
+  .download-btn {
+    background: #28a745;
+    color: white;
+  }
+  .download-btn:hover { background: #218838; transform: scale(1.1); }
+
+  .share-btn {
+    background: #007bff;
+    color: white;
+  }
+  .share-btn:hover { background: #0056b3; transform: scale(1.1); }
+
+  /* Prev/Next buttons style */
+  .prev-btn, .next-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    border: none;
+    border-radius: 50px;
+    padding: 10px 20px;
+    font-size: 16px;
+    margin: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+  }
+  .prev-btn:hover, .next-btn:hover {
+    background: #ffc107;
+    color: #000;
+    transform: scale(1.1);
+  }
+
+</style>
 </head>
 <body>
 
 <h2>Image Gallery</h2>
 <div class="gallery" id="gallery"></div>
 
+<!-- Lightbox Modal -->
+<div class="lightbox" id="lightbox">
+  <img id="lightboxImg" src="" alt="Enlarged Image">
+  <div>
+    <button class="prev-btn" id="prevBtn">⟨ Prev</button>
+    <button class="next-btn" id="nextBtn">Next ⟩</button>
+  </div>
+  <div>
+    <button class="download-btn" id="downloadBtn">Download</button>
+    <button class="share-btn" id="shareBtn">Share</button>
+    <button class="close-btn" onclick="closeLightbox()">Close</button>
+  </div>
+</div>
+
 <script>
 const images = [
   "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763223226/fza3cckh0nrjgh90nhcr.jpg",
-  // Add more Cloudinary URLs here as you upload them
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763210554/gb26gd8tue7r7c165akp.png",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763208374/lholp4mgdy7dlgujrqus.jpg",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763205138/jddbwplo2ohi1bcshbra.jpg",
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763204174/image1.1_t4mhtq.png"
 ];
 
 const container = document.getElementById("gallery");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const downloadBtn = document.getElementById("downloadBtn");
+const shareBtn = document.getElementById("shareBtn");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
 
-images.forEach(url => {
+let currentIndex = 0;
+
+// create gallery images
+images.forEach((url, index) => {
   const imgEl = document.createElement("img");
   imgEl.src = url;
+  imgEl.addEventListener("click", () => openLightbox(index));
   container.appendChild(imgEl);
 });
+
+function openLightbox(index) {
+  currentIndex = index;
+  lightbox.style.display = "flex";
+  updateLightbox();
+}
+
+function updateLightbox() {
+  const url = images[currentIndex];
+  lightboxImg.src = url;
+}
+
+// download button
+downloadBtn.onclick = async () => {
+  const url = images[currentIndex];
+  try {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = blobUrl;
+    a.download = url.split("/").pop();
+    a.click();
+
+    URL.revokeObjectURL(blobUrl);
+  } catch (err) {
+    alert("Download failed: " + err.message);
+  }
+};
+
+// share button
+shareBtn.onclick = () => {
+  const url = images[currentIndex];
+  if (navigator.share) {
+    navigator.share({ title: "Check out this image", url });
+  } else {
+    alert("Share not supported. Copy this link: " + url);
+  }
+};
+
+// prev/next buttons
+prevBtn.onclick = () => { currentIndex = (currentIndex - 1 + images.length) % images.length; updateLightbox(); };
+nextBtn.onclick = () => { currentIndex = (currentIndex + 1) % images.length; updateLightbox(); };
+
+// keyboard arrow navigation
+document.addEventListener("keydown", (e) => {
+  if (lightbox.style.display === "flex") {
+    if (e.key === "ArrowLeft") {
+      currentIndex = (currentIndex - 1 + images.length) % images.length;
+      updateLightbox();
+    } else if (e.key === "ArrowRight") {
+      currentIndex = (currentIndex + 1) % images.length;
+      updateLightbox();
+    } else if (e.key === "Escape") {
+      closeLightbox();
+    }
+  }
+});
+
+function closeLightbox() {
+  lightbox.style.display = "none";
+  lightboxImg.src = "";
+}
 </script>
 
 </body>
