@@ -1,122 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Gallery - Dhamma School</title>
-<style>
-  body { font-family: Arial, sans-serif; padding: 20px; background: #fafafa; max-width: 900px; margin: auto; }
-  h2 { text-align: center; margin-bottom: 20px; }
-  .upload-box { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 40px; display: none; }
-  input[type="file"] { width: 100%; padding: 10px; margin-bottom: 15px; }
-  button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
-  button:hover { background: #0056b3; }
-  .preview img { width: 100%; margin-top: 20px; border-radius: 8px; }
-  .url-box { background: #eee; padding: 10px; border-radius: 5px; margin-top: 10px; font-size: 14px; word-wrap: break-word; }
-  .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
-  .gallery img { width: 100%; border-radius: 10px; transition: transform 0.3s; cursor: pointer; }
-  .gallery img:hover { transform: scale(1.05); }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #fafafa;
+    }
+    h2 { text-align: center; margin-bottom: 20px; }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    .gallery img {
+      width: 100%;
+      border-radius: 10px;
+      transition: transform 0.3s;
+      cursor: pointer;
+    }
+    .gallery img:hover { transform: scale(1.05); }
+  </style>
 </head>
 <body>
 
 <h2>Image Gallery</h2>
-
-<!-- Admin Upload Section (hidden by default) -->
-<div class="upload-box" id="uploadBox">
-  <input type="file" id="imageUpload" accept="image/*" />
-  <button id="uploadBtn" onclick="uploadImage()">Upload Image</button>
-  <div id="preview" class="preview"></div>
-  <div id="urlBox" class="url-box" style="display:none;"></div>
-</div>
-
 <div class="gallery" id="gallery"></div>
 
 <script>
-const CLOUD_NAME = "dvlo3vmrb";
-const UPLOAD_PRESET = "unsigned_upload";
-const galleryContainer = document.getElementById("gallery");
-const uploadBox = document.getElementById("uploadBox");
+const images = [
+  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763223226/fza3cckh0nrjgh90nhcr.jpg",
+  // Add more Cloudinary URLs here as you upload them
+];
 
-// === Password Prompt for Upload Access ===
-const PASSWORD = "dhamma123"; // change this to your preferred password
-function requestAccess() {
-  const entered = prompt("Enter admin password to enable image upload:");
-  if (entered === PASSWORD) {
-    uploadBox.style.display = "block"; // show upload section
-  }
-}
-requestAccess();
+const container = document.getElementById("gallery");
 
-// === Load gallery from images.json ===
-async function loadGallery() {
-  try {
-    const response = await fetch('images.json');
-    const images = await response.json();
-
-    galleryContainer.innerHTML = "";
-    images.forEach(url => {
-      const imgEl = document.createElement("img");
-      imgEl.src = url;
-      galleryContainer.appendChild(imgEl);
-    });
-  } catch (err) {
-    galleryContainer.innerHTML = "<p>Error loading gallery: " + err.message + "</p>";
-  }
-}
-
-// Initial gallery load
-loadGallery();
-
-// === Upload image function ===
-async function uploadImage() {
-  const fileInput = document.getElementById("imageUpload");
-  const file = fileInput.files[0];
-  const uploadBtn = document.getElementById("uploadBtn");
-
-  if (!file) { alert("Please select an image first!"); return; }
-
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", UPLOAD_PRESET);
-  formData.append("folder", "Dhamma school");
-
-  uploadBtn.innerText = "Uploading...";
-  uploadBtn.disabled = true;
-
-  try {
-    const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-      method: "POST",
-      body: formData
-    });
-
-    const data = await response.json();
-
-    if (data.secure_url) {
-      // Show preview
-      document.getElementById("preview").innerHTML = `<img src="${data.secure_url}" alt="Uploaded Image">`;
-      const urlBox = document.getElementById("urlBox");
-      urlBox.style.display = "block";
-      urlBox.innerHTML = `<strong>Image URL:</strong><br>${data.secure_url}`;
-
-      // Update images.json on the server
-      await fetch('update-images.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: data.secure_url })
-      });
-
-      // Reload gallery instantly
-      loadGallery();
-    }
-
-  } catch (err) {
-    alert("Upload failed: " + err.message);
-  }
-
-  uploadBtn.innerText = "Upload Image";
-  uploadBtn.disabled = false;
-}
+images.forEach(url => {
+  const imgEl = document.createElement("img");
+  imgEl.src = url;
+  container.appendChild(imgEl);
+});
 </script>
 
 </body>
