@@ -46,7 +46,8 @@
     max-height: 70%;
     border-radius: 10px;
     margin-bottom: 15px;
-    transition: transform 0.3s;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+    position: relative;
   }
 
   /* Buttons inside lightbox */
@@ -91,23 +92,10 @@
   /* Mobile responsiveness */
   @media (max-width: 600px) {
     body { padding: 10px; }
-    .gallery {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-    .lightbox img {
-      max-width: 100%;
-      max-height: 60%;
-    }
-    .lightbox button {
-      padding: 14px 20px;
-      font-size: 16px;
-      margin: 6px 3px;
-    }
-    .prev-btn, .next-btn {
-      padding: 10px 18px;
-      font-size: 15px;
-    }
+    .gallery { grid-template-columns: 1fr; gap: 12px; }
+    .lightbox img { max-width: 100%; max-height: 60%; }
+    .lightbox button { padding: 14px 20px; font-size: 16px; margin: 6px 3px; }
+    .prev-btn, .next-btn { padding: 10px 18px; font-size: 15px; }
   }
 </style>
 </head>
@@ -146,6 +134,7 @@ const downloadBtn = document.getElementById("downloadBtn");
 const shareBtn = document.getElementById("shareBtn");
 
 let currentIndex = 0;
+let animating = false;
 
 // create gallery images
 images.forEach((url, index) => {
@@ -158,25 +147,45 @@ images.forEach((url, index) => {
 function openLightbox(index) {
   currentIndex = index;
   lightbox.style.display = "flex";
-  updateLightbox();
+  updateLightbox(true);
 }
 
-function updateLightbox() {
-  const url = images[currentIndex];
-  lightboxImg.src = url;
+function updateLightbox(isOpen=false, direction="right") {
+  if(animating) return;
+  animating = true;
 
-  // download button (works on mobile too)
+  const url = images[currentIndex];
+  const img = lightboxImg;
+
+  // Slide out
+  img.style.transform = direction === "right" ? "translateX(100%)" : "translateX(-100%)";
+  img.style.opacity = 0;
+
+  setTimeout(() => {
+    img.src = url;
+    img.style.transition = "none";
+    img.style.transform = direction === "right" ? "translateX(-100%)" : "translateX(100%)";
+    img.style.opacity = 0.5;
+
+    requestAnimationFrame(() => {
+      img.style.transition = "transform 0.4s ease, opacity 0.4s ease";
+      img.style.transform = "translateX(0)";
+      img.style.opacity = 1;
+    });
+
+    animating = false;
+  }, isOpen ? 0 : 200);
+
+  // download button
   downloadBtn.onclick = async () => {
     try {
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = URL.createObjectURL(blob);
-
       const a = document.createElement("a");
       a.href = blobUrl;
       a.download = url.split("/").pop();
       a.click();
-
       URL.revokeObjectURL(blobUrl);
     } catch (err) {
       alert("Download failed: " + err.message);
@@ -200,12 +209,16 @@ function closeLightbox() {
 
 // Navigate through images
 function nextImage() {
+  if(animating) return;
+  const oldIndex = currentIndex;
   currentIndex = (currentIndex + 1) % images.length;
-  updateLightbox();
+  updateLightbox(false, "right");
 }
 function prevImage() {
+  if(animating) return;
+  const oldIndex = currentIndex;
   currentIndex = (currentIndex - 1 + images.length) % images.length;
-  updateLightbox();
+  updateLightbox(false, "left");
 }
 
 // Arrow key navigation for lightbox
@@ -215,6 +228,22 @@ document.addEventListener("keydown", function(e) {
     if (e.key === "ArrowLeft") prevImage();
     if (e.key === "Escape") closeLightbox();
   }
+});
+
+// Swipe navigation for mobile
+let startX = 0;
+let endX = 0;
+
+lightbox.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; });
+lightbox.addEventListener("touchmove", (e) => { endX = e.touches[0].clientX; });
+lightbox.addEventListener("touchend", () => {
+  const diff = endX - startX;
+  if (Math.abs(diff) > 50) {
+    if (diff < 0) nextImage();
+    else prevImage();
+  }
+  startX = 0;
+  endX = 0;
 });
 </script>
 
