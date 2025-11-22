@@ -1,77 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763204150/Buddhismfavicon_s4sn8c.png" />
-<title>Darmodaya-Gallery</title>
-<!-- Google Fonts -->
+<title>Darmodaya Gallery</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;500&display=swap" rel="stylesheet" />
+<!-- Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 <style>
-  /* Body & Background */
+  :root {
+    --bg-light: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    --bg-dark: #1f1f1f;
+    --text-light: #2c3e50;
+    --text-dark: #eeeeee;
+    --card-light: #ffffff;
+    --card-dark: #2a2a2a;
+    --shadow-dark: rgba(0,0,0,0.5);
+  }
+
   body {
     font-family: 'Poppins', Arial, sans-serif;
     padding: 20px;
-    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    background: var(--bg-light);
+    color: var(--text-light);
     min-height: 100vh;
+    transition: all 0.4s;
   }
 
-  /* Heading */
+  body.dark-mode {
+    background: var(--bg-dark);
+    color: var(--text-dark);
+  }
+
   h2 {
     text-align: center;
-    margin-bottom: 30px;
-    font-family: 'Pacifico', cursive; /* new font */
-    font-size: 3rem;                 /* bigger size */
-    color: #2c3e50;
-    text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
-    position: relative;
-    animation: bounceFade 1.5s ease-in-out infinite; /* animation */
-  }
-  h2::after {
-    content: '';
-    display: block;
-    width: 80px;
-    height: 5px;
-    background: #3498db;
-    margin: 10px auto 0 auto;
-    border-radius: 3px;
+    font-family: 'Pacifico', cursive;
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: bounceFade 1.5s ease-in-out infinite;
   }
 
-  /* Bounce + fade animation */
   @keyframes bounceFade {
-    0%, 100% { transform: translateY(0); opacity: 0.8; }
-    50% { transform: translateY(-10px); opacity: 1; }
+    0%,100% { transform: translateY(0); opacity:0.8; }
+    50% { transform: translateY(-10px); opacity:1; }
   }
 
-  /* Gallery grid */
+  /* Gallery Masonry */
   .gallery {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
+    column-count: 3;
+    column-gap: 15px;
   }
 
-  /* Uniform gallery images */
-  .gallery img {
-    width: 100%;
-    height: 200px;
+  @media(max-width:900px){ .gallery { column-count:2; } }
+  @media(max-width:600px){ .gallery { column-count:1; } }
+
+  .gallery-item {
+    break-inside: avoid;
+    margin-bottom: 15px;
+    background: var(--card-light);
     border-radius: 12px;
-    cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    object-fit: cover;
+    overflow: hidden;
+    transition: all 0.3s;
   }
-  .gallery img:hover {
+
+  body.dark-mode .gallery-item {
+    background: var(--card-dark);
+    box-shadow: 0 4px 12px var(--shadow-dark);
+  }
+
+  .gallery-item img {
+    width: 100%;
+    cursor: pointer;
+    object-fit: cover;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .gallery-item img:hover {
     transform: scale(1.05);
     box-shadow: 0 8px 15px rgba(0,0,0,0.2);
   }
+
+  .caption {
+    text-align: center;
+    padding: 5px 0;
+    font-weight: 500;
+  }
+
+  /* Filter Buttons */
+  .filter-btns { text-align: center; margin-bottom: 20px; }
+  .filter-btns button {
+    padding: 8px 15px;
+    margin: 5px;
+    border: none;
+    border-radius: 6px;
+    background: #3498db;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .filter-btns button:hover { background: #2980b9; }
 
   /* Lightbox */
   .lightbox {
     display: none;
     position: fixed;
     z-index: 999;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top:0; left:0;
+    width:100%; height:100%;
     backdrop-filter: blur(8px);
     background: rgba(0,0,0,0.6);
     justify-content: center;
@@ -79,210 +114,223 @@
     flex-direction: column;
     text-align: center;
   }
+
   .lightbox img {
     max-width: 90%;
     max-height: 70%;
     border-radius: 12px;
     margin-bottom: 15px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    transition: transform 0.3s;
   }
 
-  /* Buttons inside lightbox */
   .lightbox button {
-    margin: 5px;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 14px;
+    margin:5px;
+    padding:10px 15px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-size:14px;
     transition: all 0.3s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
   }
 
-  .close-btn {
-    background: #ff4c4c;
-    color: white;
-  }
-  .close-btn:hover { background: #e63939; transform: scale(1.1); }
+  .download-btn { background:#28a745; color:white; }
+  .download-btn:hover { box-shadow:0 0 15px #28a745; transform: scale(1.1); }
 
-  .download-btn {
-    background: #28a745;
-    color: white;
-  }
-  .download-btn:hover { background: #218838; transform: scale(1.1); }
+  .close-btn { background:#ff4c4c; color:white; }
+  .close-btn:hover { box-shadow:0 0 15px #ff4c4c; transform: scale(1.1); }
 
-  .share-btn {
-    background: #007bff;
-    color: white;
-  }
-  .share-btn:hover { background: #0056b3; transform: scale(1.1); }
+  .share-btn { background:#007bff; color:white; }
+  .share-btn:hover { box-shadow:0 0 15px #007bff; transform: scale(1.1); }
 
-  /* Prev/Next buttons style */
-  .prev-btn, .next-btn {
-    background: rgba(255, 255, 255, 0.9);
-    color: #333;
-    border: none;
-    border-radius: 50px;
-    padding: 10px 20px;
-    font-size: 16px;
-    margin: 5px;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+  .prev-btn,.next-btn { background:#ffc107; color:#000; }
+  .prev-btn:hover,.next-btn:hover { box-shadow:0 0 15px #ffc107; transform: scale(1.1); }
+
+  /* Scroll Buttons */
+  #scrollTopBtn,#scrollBottomBtn {
+    position: fixed;
+    right:30px;
+    z-index:999;
+    border:none;
+    padding:12px;
+    border-radius:50%;
+    cursor:pointer;
+    font-size:20px;
+    transition:0.3s;
   }
-  .prev-btn:hover, .next-btn:hover {
-    background: #ffc107;
-    color: #000;
-    transform: scale(1.1);
+  #scrollTopBtn { bottom:40px; background:#ff9800; color:white; }
+  #scrollTopBtn:hover { background:#e68900; transform:scale(1.1); }
+  #scrollBottomBtn { bottom:100px; background:#8e44ad; color:white; }
+  #scrollBottomBtn:hover { background:#732d91; transform:scale(1.1); }
+
+  /* Upload Button */
+  .upload-btn-wrapper { text-align:center; margin:40px 0 20px; }
+  .upload-btn-wrapper a button {
+    padding:12px 25px;
+    background:#ff9800;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+  }
+  .upload-btn-wrapper a button:hover { background:#e68900; }
+
+  /* Dark/Light Toggle */
+  #themeToggle {
+    position:fixed;
+    top:20px;
+    right:30px;
+    padding:10px 15px;
+    cursor:pointer;
+    border:none;
+    border-radius:6px;
+    background:#555;
+    color:white;
+    z-index:1000;
   }
 
+  @media(max-width:600px){
+    h2{ font-size:2rem; }
+    .gallery-item img { width:100%; }
+  }
 </style>
 </head>
 <body>
-  
+
+<button id="themeToggle"><i class="fa-solid fa-adjust"></i> Toggle Dark/Light</button>
 <h2>Image Gallery</h2>
+
+<div class="filter-btns" id="filterBtns"></div>
 <div class="gallery" id="gallery"></div>
 
-<!-- Lightbox Modal -->
+<!-- Lightbox -->
 <div class="lightbox" id="lightbox">
   <img id="lightboxImg" src="" alt="Enlarged Image">
   <div>
-    <button class="prev-btn" onclick="prevImage()">⟨ Prev</button>
-    <button class="next-btn" onclick="nextImage()">Next ⟩</button>
+    <button class="prev-btn"><i class="fa-solid fa-angle-left"></i> Prev</button>
+    <button class="next-btn">Next <i class="fa-solid fa-angle-right"></i></button>
   </div>
   <div>
-    <button class="download-btn" id="downloadBtn">Download</button>
-    <button class="share-btn" id="shareBtn">Share</button>
-    <button class="close-btn" onclick="closeLightbox()">Close</button>
+    <button class="download-btn" id="downloadBtn"><i class="fa-solid fa-download"></i> Download</button>
+    <button class="share-btn" id="shareBtn"><i class="fa-solid fa-share"></i> Share</button>
+    <button class="close-btn" onclick="closeLightbox()"><i class="fa-solid fa-xmark"></i> Close</button>
   </div>
 </div>
 
-<script>
-const images = [
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763223226/fza3cckh0nrjgh90nhcr.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763210554/gb26gd8tue7r7c165akp.png",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763208374/lholp4mgdy7dlgujrqus.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763205138/jddbwplo2ohi1bcshbra.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763204174/image1.1_t4mhtq.png",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234502/Dhamma%20school/s0ingtpubuyvgmbmesar.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234572/Dhamma%20school/qklssaxxqup4gg7qkbrp.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234604/Dhamma%20school/ewoj9gp8pcpp6nzpktj6.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234632/Dhamma%20school/iyowpbewgcszuwexmbcv.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234657/Dhamma%20school/yliqobcwwn2nr66ydqwx.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234679/Dhamma%20school/wlqeuwynlpdfxm3wmflb.jpg",
-  "https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763234702/Dhamma%20school/b0ufrtegscjxgyg0qbhn.jpg",
-
-
-];
-
-const container = document.getElementById("gallery");
-const lightbox = document.getElementById("lightbox");
-const lightboxImg = document.getElementById("lightboxImg");
-const downloadBtn = document.getElementById("downloadBtn");
-const shareBtn = document.getElementById("shareBtn");
-
-let currentIndex = 0;
-
-// create gallery images
-images.forEach((url, index) => {
-  const imgEl = document.createElement("img");
-  imgEl.src = url;
-  imgEl.addEventListener("click", () => openLightbox(index));
-  container.appendChild(imgEl);
-});
-
-function openLightbox(index) {
-  currentIndex = index;
-  lightbox.style.display = "flex";
-  updateLightbox();
-}
-
-// Update lightbox image and buttons
-function updateLightbox() {
-  const url = images[currentIndex];
-  lightboxImg.src = url;
-
-  // download button (fetch as blob)
-  downloadBtn.onclick = async () => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = url.split("/").pop();
-      a.click();
-      URL.revokeObjectURL(blobUrl);
-    } catch (err) {
-      alert("Download failed: " + err.message);
-    }
-  };
-
-  // share button
-  shareBtn.onclick = () => {
-    if (navigator.share) {
-      navigator.share({ title: "Check out this image", url });
-    } else {
-      alert("Share not supported. Copy this link: " + url);
-    }
-  };
-}
-
-// Close lightbox
-function closeLightbox() {
-  lightbox.style.display = "none";
-  lightboxImg.src = "";
-}
-
-// Navigate images
-function nextImage() {
-  currentIndex = (currentIndex + 1) % images.length;
-  updateLightbox();
-}
-function prevImage() {
-  currentIndex = (currentIndex - 1 + images.length) % images.length;
-  updateLightbox();
-}
-
-// Swipe support for touch devices
-let startX = 0;
-lightbox.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
-lightbox.addEventListener('touchend', e => {
-  const endX = e.changedTouches[0].clientX;
-  if (endX - startX > 50) prevImage(); // swipe right
-  if (startX - endX > 50) nextImage(); // swipe left
-});
-
-// Arrow key navigation
-document.addEventListener('keydown', e => {
-  if (lightbox.style.display === 'flex') {
-    if (e.key === 'ArrowRight') nextImage();
-    if (e.key === 'ArrowLeft') prevImage();
-    if (e.key === 'Escape') closeLightbox();
-  }
-});
-</script>
-
-<div style="text-align:center; margin:40px 0 20px 0;">
-  <a href="upload.html">
-    <button style="
-      padding: 12px 25px;
-      background: #ff9800;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.3s;
-    " 
-    onmouseover="this.style.background='#e68900';" 
-    onmouseout="this.style.background='#ff9800';">
-      Upload Image
-    </button>
-  </a>
+<div class="upload-btn-wrapper">
+  <a href="upload.html"><button>Upload Image</button></a>
 </div>
 
+<button id="scrollTopBtn" onclick="scrollToTop()">↑</button>
+<button id="scrollBottomBtn" onclick="scrollToBottom()">↓</button>
 
+<script>
+let images = [];
+let currentIndex = 0;
 
+// Load images from JSON
+fetch("images.json")
+  .then(res=>res.json())
+  .then(data=>{ images=data; renderGallery(images); renderFilterButtons(images); });
+
+// Gallery
+function renderGallery(data){
+  const container=document.getElementById("gallery");
+  container.innerHTML="";
+  data.forEach((item,index)=>{
+    const div=document.createElement("div");
+    div.className="gallery-item";
+    const img=document.createElement("img");
+    img.src=item.url;
+    img.alt=item.caption;
+    img.loading="lazy";
+    img.addEventListener("click",()=>openLightbox(index));
+    const caption=document.createElement("div");
+    caption.className="caption";
+    caption.innerText=item.caption;
+    div.appendChild(img);
+    div.appendChild(caption);
+    container.appendChild(div);
+  });
+}
+
+// Filters
+function renderFilterButtons(data){
+  const categories=[...new Set(data.map(i=>i.category))];
+  const btnContainer=document.getElementById("filterBtns");
+  btnContainer.innerHTML='<button onclick="renderGallery(images)">All</button>';
+  categories.forEach(cat=>{
+    const btn=document.createElement("button");
+    btn.innerText=cat;
+    btn.onclick=()=>renderGallery(images.filter(i=>i.category===cat));
+    btnContainer.appendChild(btn);
+  });
+}
+
+// Lightbox
+const lightbox=document.getElementById("lightbox");
+const lightboxImg=document.getElementById("lightboxImg");
+const downloadBtn=document.getElementById("downloadBtn");
+const shareBtn=document.getElementById("shareBtn");
+const prevBtn=document.querySelector(".prev-btn");
+const nextBtn=document.querySelector(".next-btn");
+
+function openLightbox(index){ currentIndex=index; lightbox.style.display="flex"; updateLightbox(); }
+function updateLightbox(){
+  const url=images[currentIndex].url;
+  lightboxImg.src=url;
+  downloadBtn.onclick=async()=>{
+    const resp=await fetch(url);
+    const blob=await resp.blob();
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download=url.split("/").pop();
+    a.click();
+  };
+  shareBtn.onclick=()=>{ if(navigator.share){ navigator.share({title:"Check this image",url}); } else alert("Copy link: "+url);}
+}
+
+function closeLightbox(){ lightbox.style.display="none"; lightboxImg.src=""; }
+function nextImage(){ currentIndex=(currentIndex+1)%images.length; updateLightbox(); }
+function prevImage(){ currentIndex=(currentIndex-1+images.length)%images.length; updateLightbox(); }
+
+prevBtn.addEventListener("click", prevImage);
+nextBtn.addEventListener("click", nextImage);
+
+// Keyboard navigation
+document.addEventListener('keydown', e=>{
+  if(lightbox.style.display==='flex'){
+    if(e.key==='ArrowRight') nextImage();
+    if(e.key==='ArrowLeft') prevImage();
+    if(e.key==='Escape') closeLightbox();
+  }
+});
+
+// Zoom
+lightbox.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const scale = Number(lightboxImg.style.transform.replace(/[^0-9.]/g,'')) || 1;
+  const newScale = e.deltaY<0 ? scale+0.1 : Math.max(0.5, scale-0.1);
+  lightboxImg.style.transform=`scale(${newScale})`;
+});
+
+// Scroll
+const scrollTopBtn=document.getElementById("scrollTopBtn");
+const scrollBottomBtn=document.getElementById("scrollBottomBtn");
+function scrollToTop(){ window.scrollTo({top:0,behavior:"smooth"});}
+function scrollToBottom(){ window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"});}
+window.onscroll=function(){
+  scrollTopBtn.style.display=(window.scrollY>300)?"block":"none";
+  scrollBottomBtn.style.display=(window.scrollY>300)?"block":"none";
+}
+
+// Theme toggle
+const themeToggle=document.getElementById("themeToggle");
+themeToggle.onclick=()=>document.body.classList.toggle('dark-mode');
+</script>
 </body>
 </html>
