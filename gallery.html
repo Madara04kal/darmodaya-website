@@ -242,7 +242,7 @@ fetch("images.json")
   });
 
 // Render gallery
-function renderGallery(data){
+function renderGallery(data) {
   const container = document.getElementById("gallery");
   container.innerHTML = "";
   data.forEach((item, index) => {
@@ -262,8 +262,8 @@ function renderGallery(data){
   });
 }
 
-// Render filter buttons
-function renderFilterButtons(data){
+// Render category filter buttons
+function renderFilterButtons(data) {
   const categories = [...new Set(data.map(i => i.category))];
   const btnContainer = document.getElementById("filterBtns");
   btnContainer.innerHTML = '<button onclick="renderGallery(images)">All</button>';
@@ -283,13 +283,15 @@ const shareBtn = document.getElementById("shareBtn");
 const prevBtn = document.querySelector(".prev-btn");
 const nextBtn = document.querySelector(".next-btn");
 
-function openLightbox(index){
+function openLightbox(index) {
   currentIndex = index;
   lightbox.style.display = "flex";
+  scrollTopBtn.style.display = "none";
+  scrollBottomBtn.style.display = "none";
   updateLightbox();
 }
 
-function updateLightbox(){
+function updateLightbox() {
   const url = images[currentIndex].url;
   lightboxImg.src = url;
 
@@ -303,87 +305,94 @@ function updateLightbox(){
   };
 
   shareBtn.onclick = () => {
-    if(navigator.share){
-      navigator.share({title:"Check this image", url});
-    } else {
-      alert("Copy link: " + url);
-    }
+    if (navigator.share) {
+      navigator.share({ title: "Check this image", url });
+    } else alert("Copy link: " + url);
   };
 }
 
-function closeLightbox(){
+function closeLightbox() {
   lightbox.style.display = "none";
   lightboxImg.src = "";
+  scrollTopBtn.style.display = (window.scrollY > 300) ? "block" : "none";
+  scrollBottomBtn.style.display = (window.scrollY > 300) ? "block" : "none";
 }
 
-function nextImage(){
+function nextImage() {
   currentIndex = (currentIndex + 1) % images.length;
   updateLightbox();
 }
 
-function prevImage(){
+function prevImage() {
   currentIndex = (currentIndex - 1 + images.length) % images.length;
   updateLightbox();
 }
 
-// Button listeners
 prevBtn.addEventListener("click", prevImage);
 nextBtn.addEventListener("click", nextImage);
 
 // Keyboard navigation
 document.addEventListener('keydown', e => {
-  if(lightbox.style.display === 'flex'){
-    if(e.key === 'ArrowRight') nextImage();
-    if(e.key === 'ArrowLeft') prevImage();
-    if(e.key === 'Escape') closeLightbox();
+  if (lightbox.style.display === 'flex') {
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+    if (e.key === 'Escape') closeLightbox();
   }
 });
 
-// Zoom with mouse wheel
+// Mouse wheel zoom
 lightbox.addEventListener('wheel', e => {
   e.preventDefault();
-  const scale = Number(lightboxImg.style.transform.replace(/[^0-9.]/g,'')) || 1;
+  let scale = Number(lightboxImg.style.transform.replace(/[^0-9.]/g, '')) || 1;
   const newScale = e.deltaY < 0 ? scale + 0.1 : Math.max(0.5, scale - 0.1);
   lightboxImg.style.transform = `scale(${newScale})`;
 });
 
-// Swipe support for mobile
-let touchStartX = 0;
-let touchEndX = 0;
-
-lightbox.addEventListener('touchstart', e => {
-  touchStartX = e.changedTouches[0].screenX;
-}, false);
-
-lightbox.addEventListener('touchend', e => {
-  touchEndX = e.changedTouches[0].screenX;
-  handleSwipe();
-}, false);
-
-function handleSwipe(){
-  if(!lightbox.style.display || lightbox.style.display === 'none') return;
-  const swipeDistance = touchEndX - touchStartX;
-  if(Math.abs(swipeDistance) > 50){ // minimum swipe distance
-    if(swipeDistance > 0) prevImage(); // swipe right
-    else nextImage(); // swipe left
-  }
-}
+// Mobile swipe support
+let startX = 0;
+lightbox.addEventListener("touchstart", e => { startX = e.touches[0].clientX; });
+lightbox.addEventListener("touchend", e => {
+  const endX = e.changedTouches[0].clientX;
+  if (endX - startX > 50) prevImage();
+  if (startX - endX > 50) nextImage();
+});
 
 // Scroll buttons
 const scrollTopBtn = document.getElementById("scrollTopBtn");
 const scrollBottomBtn = document.getElementById("scrollBottomBtn");
 
-function scrollToTop(){ window.scrollTo({top:0, behavior:"smooth"}); }
-function scrollToBottom(){ window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"}); }
+function scrollToTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
+function scrollToBottom() { window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }); }
 
-window.onscroll = function(){
-  scrollTopBtn.style.display = (window.scrollY > 300) ? "block" : "none";
-  scrollBottomBtn.style.display = (window.scrollY > 300) ? "block" : "none";
+window.onscroll = function() {
+  if (lightbox.style.display !== 'flex') {
+    scrollTopBtn.style.display = (window.scrollY > 300) ? "block" : "none";
+    scrollBottomBtn.style.display = (window.scrollY > 300) ? "block" : "none";
+  }
 };
 
 // Theme toggle
 const themeToggle = document.getElementById("themeToggle");
-themeToggle.onclick = () => document.body.classList.toggle('dark-mode');
+
+function updateThemeIcon() {
+  const icon = themeToggle.querySelector("i");
+  if (document.body.classList.contains("dark-mode")) {
+    icon.classList.remove("fa-moon");
+    icon.classList.add("fa-sun");
+  } else {
+    icon.classList.remove("fa-sun");
+    icon.classList.add("fa-moon");
+  }
+}
+
+// Initialize theme icon
+updateThemeIcon();
+
+// Toggle dark/light mode
+themeToggle.onclick = () => {
+  document.body.classList.toggle("dark-mode");
+  updateThemeIcon();
+};
 
 </script>
 </body>
