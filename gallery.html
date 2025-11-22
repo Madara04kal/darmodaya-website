@@ -201,7 +201,7 @@
 </head>
 <body>
 
-<button id="themeToggle"><i class="fa-solid fa-adjust"></i> Toggle Dark/Light</button>
+<button id="themeToggle"><i class="fa-solid fa-adjust"></i> Dark/Light</button>
 <h2>Image Gallery</h2>
 
 <div class="filter-btns" id="filterBtns"></div>
@@ -234,103 +234,157 @@ let currentIndex = 0;
 
 // Load images from JSON
 fetch("images.json")
-  .then(res=>res.json())
-  .then(data=>{ images=data; renderGallery(images); renderFilterButtons(images); });
+  .then(res => res.json())
+  .then(data => {
+    images = data;
+    renderGallery(images);
+    renderFilterButtons(images);
+  });
 
-// Gallery
+// Render gallery
 function renderGallery(data){
-  const container=document.getElementById("gallery");
-  container.innerHTML="";
-  data.forEach((item,index)=>{
-    const div=document.createElement("div");
-    div.className="gallery-item";
-    const img=document.createElement("img");
-    img.src=item.url;
-    img.alt=item.caption;
-    img.loading="lazy";
-    img.addEventListener("click",()=>openLightbox(index));
-    const caption=document.createElement("div");
-    caption.className="caption";
-    caption.innerText=item.caption;
+  const container = document.getElementById("gallery");
+  container.innerHTML = "";
+  data.forEach((item, index) => {
+    const div = document.createElement("div");
+    div.className = "gallery-item";
+    const img = document.createElement("img");
+    img.src = item.url;
+    img.alt = item.caption;
+    img.loading = "lazy";
+    img.addEventListener("click", () => openLightbox(index));
+    const caption = document.createElement("div");
+    caption.className = "caption";
+    caption.innerText = item.caption;
     div.appendChild(img);
     div.appendChild(caption);
     container.appendChild(div);
   });
 }
 
-// Filters
+// Render filter buttons
 function renderFilterButtons(data){
-  const categories=[...new Set(data.map(i=>i.category))];
-  const btnContainer=document.getElementById("filterBtns");
-  btnContainer.innerHTML='<button onclick="renderGallery(images)">All</button>';
-  categories.forEach(cat=>{
-    const btn=document.createElement("button");
-    btn.innerText=cat;
-    btn.onclick=()=>renderGallery(images.filter(i=>i.category===cat));
+  const categories = [...new Set(data.map(i => i.category))];
+  const btnContainer = document.getElementById("filterBtns");
+  btnContainer.innerHTML = '<button onclick="renderGallery(images)">All</button>';
+  categories.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.innerText = cat;
+    btn.onclick = () => renderGallery(images.filter(i => i.category === cat));
     btnContainer.appendChild(btn);
   });
 }
 
 // Lightbox
-const lightbox=document.getElementById("lightbox");
-const lightboxImg=document.getElementById("lightboxImg");
-const downloadBtn=document.getElementById("downloadBtn");
-const shareBtn=document.getElementById("shareBtn");
-const prevBtn=document.querySelector(".prev-btn");
-const nextBtn=document.querySelector(".next-btn");
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const downloadBtn = document.getElementById("downloadBtn");
+const shareBtn = document.getElementById("shareBtn");
+const prevBtn = document.querySelector(".prev-btn");
+const nextBtn = document.querySelector(".next-btn");
 
-function openLightbox(index){ currentIndex=index; lightbox.style.display="flex"; updateLightbox(); }
-function updateLightbox(){
-  const url=images[currentIndex].url;
-  lightboxImg.src=url;
-  downloadBtn.onclick=async()=>{
-    const resp=await fetch(url);
-    const blob=await resp.blob();
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download=url.split("/").pop();
-    a.click();
-  };
-  shareBtn.onclick=()=>{ if(navigator.share){ navigator.share({title:"Check this image",url}); } else alert("Copy link: "+url);}
+function openLightbox(index){
+  currentIndex = index;
+  lightbox.style.display = "flex";
+  updateLightbox();
 }
 
-function closeLightbox(){ lightbox.style.display="none"; lightboxImg.src=""; }
-function nextImage(){ currentIndex=(currentIndex+1)%images.length; updateLightbox(); }
-function prevImage(){ currentIndex=(currentIndex-1+images.length)%images.length; updateLightbox(); }
+function updateLightbox(){
+  const url = images[currentIndex].url;
+  lightboxImg.src = url;
 
+  downloadBtn.onclick = async () => {
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = url.split("/").pop();
+    a.click();
+  };
+
+  shareBtn.onclick = () => {
+    if(navigator.share){
+      navigator.share({title:"Check this image", url});
+    } else {
+      alert("Copy link: " + url);
+    }
+  };
+}
+
+function closeLightbox(){
+  lightbox.style.display = "none";
+  lightboxImg.src = "";
+}
+
+function nextImage(){
+  currentIndex = (currentIndex + 1) % images.length;
+  updateLightbox();
+}
+
+function prevImage(){
+  currentIndex = (currentIndex - 1 + images.length) % images.length;
+  updateLightbox();
+}
+
+// Button listeners
 prevBtn.addEventListener("click", prevImage);
 nextBtn.addEventListener("click", nextImage);
 
 // Keyboard navigation
-document.addEventListener('keydown', e=>{
-  if(lightbox.style.display==='flex'){
-    if(e.key==='ArrowRight') nextImage();
-    if(e.key==='ArrowLeft') prevImage();
-    if(e.key==='Escape') closeLightbox();
+document.addEventListener('keydown', e => {
+  if(lightbox.style.display === 'flex'){
+    if(e.key === 'ArrowRight') nextImage();
+    if(e.key === 'ArrowLeft') prevImage();
+    if(e.key === 'Escape') closeLightbox();
   }
 });
 
-// Zoom
-lightbox.addEventListener('wheel', e=>{
+// Zoom with mouse wheel
+lightbox.addEventListener('wheel', e => {
   e.preventDefault();
   const scale = Number(lightboxImg.style.transform.replace(/[^0-9.]/g,'')) || 1;
-  const newScale = e.deltaY<0 ? scale+0.1 : Math.max(0.5, scale-0.1);
-  lightboxImg.style.transform=`scale(${newScale})`;
+  const newScale = e.deltaY < 0 ? scale + 0.1 : Math.max(0.5, scale - 0.1);
+  lightboxImg.style.transform = `scale(${newScale})`;
 });
 
-// Scroll
-const scrollTopBtn=document.getElementById("scrollTopBtn");
-const scrollBottomBtn=document.getElementById("scrollBottomBtn");
-function scrollToTop(){ window.scrollTo({top:0,behavior:"smooth"});}
-function scrollToBottom(){ window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"});}
-window.onscroll=function(){
-  scrollTopBtn.style.display=(window.scrollY>300)?"block":"none";
-  scrollBottomBtn.style.display=(window.scrollY>300)?"block":"none";
+// Swipe support for mobile
+let touchStartX = 0;
+let touchEndX = 0;
+
+lightbox.addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+}, false);
+
+lightbox.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+}, false);
+
+function handleSwipe(){
+  if(!lightbox.style.display || lightbox.style.display === 'none') return;
+  const swipeDistance = touchEndX - touchStartX;
+  if(Math.abs(swipeDistance) > 50){ // minimum swipe distance
+    if(swipeDistance > 0) prevImage(); // swipe right
+    else nextImage(); // swipe left
+  }
 }
 
+// Scroll buttons
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+const scrollBottomBtn = document.getElementById("scrollBottomBtn");
+
+function scrollToTop(){ window.scrollTo({top:0, behavior:"smooth"}); }
+function scrollToBottom(){ window.scrollTo({top:document.body.scrollHeight, behavior:"smooth"}); }
+
+window.onscroll = function(){
+  scrollTopBtn.style.display = (window.scrollY > 300) ? "block" : "none";
+  scrollBottomBtn.style.display = (window.scrollY > 300) ? "block" : "none";
+};
+
 // Theme toggle
-const themeToggle=document.getElementById("themeToggle");
-themeToggle.onclick=()=>document.body.classList.toggle('dark-mode');
+const themeToggle = document.getElementById("themeToggle");
+themeToggle.onclick = () => document.body.classList.toggle('dark-mode');
+
 </script>
 </body>
 </html>
