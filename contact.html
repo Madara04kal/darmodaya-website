@@ -29,7 +29,7 @@
 
 body {
   margin: 0;
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', sanssans-serif;
   background: var(--bg-light);
   color: var(--text-light);
   transition: 0.4s;
@@ -208,13 +208,8 @@ form button:hover {
     <div class="info-box">
       <div class="info-item"><i class="fa-solid fa-phone"></i> +94 342264140</div>
       <div class="info-item"><i class="fa-solid fa-envelope"></i> darmodaya.school2025@gmail.com</div>
-      <div class="info-item"><i class="fa-solid fa-location-dot"></i> Sri Darmodaya Daham Pasala,<br>
-         Maha Uduwa,<br>
-Horana.<br>
-</div>
+      <div class="info-item"><i class="fa-solid fa-location-dot"></i> Sri Darmodaya Daham Pasala,<br>Maha Uduwa,<br>Horana.</div>
     </div>
-
-    
 
     <h3>Follow Us</h3>
     <div class="social-icons">
@@ -226,8 +221,8 @@ Horana.<br>
     <h3>Find Us on Map</h3>
     <div class="map-box">
       <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.1350621373035!2d80.06563690000002!3d6.7533787!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae24c92bdeb02c5%3A0x6ea0c33b587fcf1e!2sSri%20Sunandaramara%2C%20Maha%20Uduwa!5e0!3m2!1sen!2slk!4v1764098275095!5m2!1sen!2slk" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-        allowfullscreen="" loading="lazy">
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3962.1350621373035!2d80.06563690000002!3d6.7533787!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae24c92bdeb02c5%3A0x6ea0c33b587fcf1e!2sSri%20Sunandaramara%2C%20Maha%20Uduwa!5e0!3m2!1sen!2slk!4v1764098275095!5m2!1sen!2slk" 
+        width="600" height="450" style="border:0;" loading="lazy">
       </iframe>
     </div>
 
@@ -238,27 +233,51 @@ Horana.<br>
     <h2>Send a Message</h2>
 
     <form id="contactForm">
-      <input type="text" placeholder="Your Name" required />
-      <input type="email" placeholder="Your Email" required />
-      <input type="text" placeholder="Phone (optional)" />
-      <textarea rows="6" placeholder="Your Message" required></textarea>
+      <input type="text" id="name" placeholder="Your Name" required />
+      <input type="email" id="email" placeholder="Your Email" required />
+      <input type="text" id="phone" placeholder="Phone (optional)" />
+      <textarea id="message" rows="6" placeholder="Your Message" required></textarea>
       <button type="submit">Send Message</button>
     </form>
   </div>
 
 </div>
 
+<!-- EmailJS (Official CDN) -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <script>
+// Initialize EmailJS
+(function() {
+  emailjs.init("lRHEqztDwyTSpl9eo");
+})();
+
 // Theme Toggle
 const themeToggle = document.getElementById("themeToggle");
 themeToggle.onclick = () => {
   document.body.classList.toggle("dark-mode");
 };
 
-// Form Submit
+// Form Submit + EmailJS
 document.getElementById("contactForm").addEventListener("submit", function(e){
   e.preventDefault();
-  alert("Thank you! Your message has been sent.");
+
+  const params = {
+    from_name: document.getElementById("name").value,
+    from_email: document.getElementById("email").value,
+    /*phone: document.getElementById("phone").value,*/
+    message: document.getElementById("message").value,
+  };
+
+  emailjs.send("service_u83akxk", "template_bp9fzd9", params)
+  .then(() => {
+      alert("Thank you! Your message has been sent successfully.");
+      document.getElementById("contactForm").reset();
+  })
+  .catch((error) => {
+      console.error(error);
+      alert("Error sending message. Please try again.");
+  });
 });
 </script>
 
