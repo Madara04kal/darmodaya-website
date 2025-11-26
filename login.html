@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Dharmodaya</title>
+<link rel="icon" href="https://res.cloudinary.com/dvlo3vmrb/image/upload/v1763204150/Buddhismfavicon_s4sn8c.png">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #f5f7fa;
+  margin: 0;
+}
+.login-container {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  width: 350px;
+  text-align: center;
+}
+.login-container h2 { margin-bottom: 20px; }
+.login-container input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+.login-container button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 6px;
+  background: #ff9800;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.login-container button:hover {
+  background: #e68900;
+}
+.google-btn {
+  background: #4285F4;
+  margin-top: 10px;
+}
+.google-btn:hover {
+  background: #357ae8;
+}
+.error-msg { color: red; font-size: 14px; margin-top: 10px; }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>Login</h2>
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button id="loginBtn">Login</button>
+  <button id="googleBtn" class="google-btn">Login with Google</button>
+  <div class="error-msg" id="errorMsg"></div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBPUujCg855oUZk_NlIfyunUtcuWVZxXFI",
+  authDomain: "darmodaya-site.firebaseapp.com",
+  projectId: "darmodaya-site",
+  storageBucket: "darmodaya-site.firebasestorage.app",
+  messagingSenderId: "113027448000",
+  appId: "1:113027448000:web:d65f6efebf745d06f64125"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// Email/Password Login
+document.getElementById('loginBtn').addEventListener('click', () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const errorMsg = document.getElementById('errorMsg');
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => { window.location.href = "dashboard.html"; })
+    .catch(err => { errorMsg.textContent = err.message; });
+});
+
+// Google Login
+document.getElementById('googleBtn').addEventListener('click', () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider)
+    .then(() => { window.location.href = "dashboard.html"; })
+    .catch(err => { document.getElementById('errorMsg').textContent = err.message; });
+});
+</script>
+
+</body>
+</html>

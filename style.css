@@ -139,6 +139,27 @@ header p {
   transform: translateY(-5px) scale(1.05);
 }
 
+.sign-in-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  padding: 10px 18px;
+  background-color: hsl(243, 100%, 50%);
+  color: white;
+  font-weight: 500;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: 0.3s;
+  z-index: 1000;
+}
+
+.sign-in-btn:hover {
+  background-color: #6b00e6;
+  transform: scale(1.05);
+  box-shadow: 0 0 10px hsl(203, 100%, 50%);
+}
+
+
 /* Particle Layer */
 .particles {
   position: absolute;
